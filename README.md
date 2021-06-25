@@ -1,3 +1,5 @@
+[![Maze-SMAAC Docker Image](https://github.com/enlite-ai/maze_smaac/actions/workflows/github-ci.yml/badge.svg)](https://github.com/enlite-ai/maze_smaac/actions/workflows/github-ci.yml)
+
 # Semi-Markov Afterstate Actor-Critic (SMAAC) with Maze
 
 ![Example for trained agent in action](https://cdn-images-1.medium.com/max/873/1*qYrrwQLdkf21voqSXGQ7zQ.gif)
