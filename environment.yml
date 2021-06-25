@@ -1,0 +1,15 @@
+name: maze_smaac
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.7
+  - pytorch==1.9.0
+  - pygraphviz==1.7
+  - pyqt==5.12.3
+  - pip==21.1.2
+  - pip:
+    - numba==0.53.1
+    - grid2op==0.9.4
+    - gdown==3.13.0
+    - maze-rl==0.1.7

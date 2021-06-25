@@ -1,0 +1,37 @@
+# @package _global_
+
+# defaults to override
+defaults:
+  - override /algorithm: sac
+  - override /runner: dev
+
+# overrides
+algorithm:
+  epoch_length: 100
+  num_actors: 1
+  n_rollout_steps: 1
+  rollouts_per_iteration: 1
+  num_batches_per_iter: 1
+  gamma: 0.995
+  batch_size: 128
+  replay_buffer_size: 50000
+  initial_buffer_size: 128
+  device: 'cuda'
+  tau: 1e-3
+  alpha_lr: 5e-5
+  lr: 5e-5
+  patience: 1000
+  target_entropy_multiplier: 3.0
+
+  # Rollout evaluator (used for best model selection)
+  rollout_evaluator:
+    # Run evaluation in deterministic mode (argmax-policy)
+    deterministic: true
+
+    # Number of evaluation trials
+    n_episodes: 2
+
+runner:
+  dump_interval: 5
+
+log_base_dir: outputs/smaac_with_maze

@@ -1,0 +1,32 @@
+# @package wrappers
+maze.core.wrappers.export_gif_wrapper.ExportGifWrapper:
+  export: false
+  duration: 0.5
+
+maze_smaac.wrappers.maze_smaac_smdp_wrapper.MazeSmaacSMDPWrapper:
+  rule: 'c'
+  max_low_level_step_count: 19
+  smaac_evaluation_mode: true
+  verbose: false
+
+maze.core.wrappers.reward_clipping_wrapper.RewardClippingWrapper:
+  min_val: -2
+  max_val: 10
+
+maze.core.wrappers.observation_normalization.observation_normalization_wrapper.ObservationNormalizationWrapper:
+  # default behaviour
+  default_strategy: maze.normalization_strategies.MeanZeroStdOneObservationNormalizationStrategy
+  default_strategy_config:
+    clip_range: [ -3, 3 ]
+    axis: [ 0, 1 ]
+  default_statistics: ~
+  statistics_dump: statistics.pkl
+  sampling_policy:
+    _target_: maze.core.agent.random_policy.RandomPolicy
+  exclude: [ 'dependent_on_action', 'goal_topology', 'topo' ]
+  manual_config: ~
+
+maze.core.wrappers.monitoring_wrapper.MazeEnvMonitoringWrapper:
+  observation_logging: false
+  action_logging: true
+  reward_logging: false

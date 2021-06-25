@@ -1,0 +1,17 @@
+# @package env
+_target_: maze_smaac.utils.env_factories.maze_smaac_env_factory
+
+power_grid: "l2rpn_wcci_2020"
+mask: 5
+mask_hi: 19
+danger: 0.9
+n_history: 6
+bus_threshold: 0.35
+reward_scale: 1.0
+seed: 42
+reward:
+    _target_: maze_smaac.reward.smaac_reward.LossReward
+    rewards:
+      - name: "L2RPNSandBoxScore"
+        _target_: grid2op.Reward.L2RPNSandBoxScore.L2RPNSandBoxScore
+        kpi: yes

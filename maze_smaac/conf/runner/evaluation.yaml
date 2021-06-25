@@ -1,0 +1,8 @@
+# @package runner
+_target_: maze_smaac.utils.evaluation_runner.EvaluationRunner
+
+# Use argmax policy for evaluation
+deterministic: true
+
+# Use SMAAC test set chronics
+use_test_set: true

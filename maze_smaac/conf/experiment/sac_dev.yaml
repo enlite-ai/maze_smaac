@@ -1,0 +1,73 @@
+# @package _global_
+
+# defaults to override
+defaults:
+  - override /algorithm: sac
+  - override /runner: dev
+
+# overrides
+algorithm:
+  # Number of steps taken for each rollout
+  n_rollout_steps: 1
+  # Learning rate
+  lr: 0.001
+  # The entropy coefficient to use in the loss computation
+  entropy_coef: 0.2
+  # Discounting factor
+  gamma: 0.99
+  # The maximum allowed gradient norm during training
+  max_grad_norm: 0.0
+  # Number of actors to combine to one batch
+  batch_size: 1
+  # Number of batches to update on in each iteration
+  num_batches_per_iter: 1
+  # Number of actors to be run
+  num_actors: 1
+  # Parameter weighting the soft update of the target network
+  tau: 0.005
+  # Specify in what intervals to update the target networks
+  target_update_interval: 1
+  # Either "cpu" or "cuda"
+  device: "cpu"
+  # Specify whether to Learn the entropy coefficient or rather use the default one (entropy_coef)
+  entropy_tuning: true
+  # Learning rate for entropy tuning
+  alpha_lr: 0.0007
+  # The size of the replay buffer
+  replay_buffer_size: 1
+  # The initial buffer size, where transaction are sampled with the initial sampling policy
+  initial_buffer_size: 1
+  # The policy used to initially fill the replay buffer
+  initial_sampling_policy:
+    _target_: maze.core.agent.random_policy.RandomPolicy
+  # Number of rollouts collected from the actor in each iteration
+  rollouts_per_iteration: 1
+  # Specify whether all computed rollouts should be split into transitions before processing them
+  split_rollouts_into_transitions: true
+  # Number of epochs to train
+  n_epochs: 10
+  # Number of updates per epoch
+  epoch_length: 1
+  # Number of evaluation envs
+  eval_concurrency: 2
+  # Number of steps used for early stopping
+  patience: 50
+  # Specify an optional multiplier for the target entropy. This value is multiplied with the default target entropy
+  #   computation (this is called alpha tuning in the org paper):
+  #        discrete spaces: target_entropy = target_entropy_multiplier * ( - 0.98 * (-log (1 / |A|))
+  #        continues spaces: target_entropy = target_entropy_multiplier * (- dim(A)) (e.g., -6 for HalfCheetah-v1)
+  target_entropy_multiplier: 3.0
+
+  # Rollout evaluator (used for best model selection)
+  rollout_evaluator:
+    # Run evaluation in deterministic mode (argmax-policy)
+    deterministic: true
+
+    # Number of evaluation trials
+    n_episodes: 2
+
+runner:
+  normalization_samples: 1
+  dump_interval: 5
+
+log_base_dir: outputs/sac_dev
