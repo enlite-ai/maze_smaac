@@ -13,7 +13,12 @@ import numpy as np
 from maze.core.agent.torch_policy import TorchPolicy
 from maze.core.annotations import override
 from maze.core.env.base_env_events import BaseEnvEvents
+from maze.core.env.maze_env import MazeEnv
+from maze.core.env.observation_conversion import ObservationType
+from maze.core.env.structured_env import StructuredEnv
+from maze.core.env.structured_env_spaces_mixin import StructuredEnvSpacesMixin
 from maze.core.log_stats.log_stats import LogStatsLevel
+from maze.core.wrappers.wrapper import ObservationWrapper, Wrapper
 from maze.train.parallelization.vector_env.sequential_vector_env import SequentialVectorEnv
 from maze.train.trainers.common.evaluators.rollout_evaluator import RolloutEvaluator
 from maze.train.trainers.common.model_selection.model_selection_base import ModelSelectionBase
@@ -118,6 +123,22 @@ class SMAACRolloutEvaluator(RolloutEvaluator):
         # self.observation_conversion = self.eval_env.envs[0].observation_conversion
         # self.action_conversion = self.eval_env.envs[0].action_conversion
 
+    def process_observation(self, env: Union[StructuredEnv, StructuredEnvSpacesMixin, MazeEnv],
+                            observation: ObservationType) -> ObservationType:
+        """Get the observation by recursively passing it thorough the wrapper stack.
+
+        :param env: The current env in the wrapper stack.
+        :param observation: The current observation in the wrapper stack.
+
+        :return The observation processed by the env, if the the current (or any sub env) is an observation wrapper.
+        """
+        if isinstance(env, ObservationWrapper):
+            return env.observation(self.process_observation(env.env, observation))
+        elif isinstance(env, Wrapper):
+            return self.process_observation(env.env, observation)
+        else:
+            return observation
+
     @override(RolloutEvaluator)
     def evaluate(self, policy: TorchPolicy) -> None:
         """Evaluate given policy (results are stored in stat logs) and dump the model if the reward improved.
@@ -127,9 +148,10 @@ class SMAACRolloutEvaluator(RolloutEvaluator):
         policy.eval()
 
         result = {}
-        maze_state = None
 
         for idx, i in enumerate(self.chronics):
+            maze_state = None
+
             ffw = int(np.argmin([self.dn_ffw[(i, fw)][0] for fw in range(self.max_ffw) if
                                  (i, fw) in self.dn_ffw and self.dn_ffw[(i, fw)][0] >= 10]))
 
@@ -145,6 +167,9 @@ class SMAACRolloutEvaluator(RolloutEvaluator):
             # Transform maze_state into obs
             if maze_state:
                 obs = self.eval_env.maze_env.observation_conversion.maze_to_space(maze_state=maze_state)
+                # Pass obs through Maze wrapper stack
+                obs = self.process_observation(env=self.eval_env, observation=obs)
+
             total_reward = 0
             total_sandboxscore = 0
             alive_frame = 0
